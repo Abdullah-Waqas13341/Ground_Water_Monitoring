@@ -15,7 +15,8 @@ import {
   ChevronDown, Bell, Settings, User, Map, TrendingDown, TrendingUp,
   Droplet, AlertTriangle, Activity, Zap, Wind, Cloud, Gauge, Wrench,
   BarChart3, PieChart, Download, Calendar, RotateCcw, Navigation2,
-  CheckCircle, AlertCircle, PlusCircle, MinusCircle, Target
+  CheckCircle, AlertCircle, PlusCircle, MinusCircle, Target,
+  LayoutDashboard, Radio, LineChart, BookOpen, FileText
 } from 'lucide-react';
 import Reports from './Reports';
 
@@ -137,17 +138,17 @@ export default function SmartGroundwaterDashboard() {
 
   // ── Navigation items ──────────────────────────────────────────────────────
   const navigationItems = [
-    { id: 'dashboard',   label: 'Dashboard',             icon: '📊' },
-    { id: 'monitoring',  label: 'Live Monitoring',        icon: '📡' },
-    { id: 'analytics',   label: 'Groundwater Analytics',  icon: '📈' },
-    { id: 'recharge',    label: 'Recharge System',        icon: '💧' },
-    { id: 'rainfall',    label: 'Rainfall Monitoring',    icon: '🌧️' },
-    { id: 'calculator',  label: 'Design Calculator',      icon: '🔧' },
-    { id: 'mapping',     label: 'GIS Mapping',            icon: '🗺️' },
-    { id: 'historical',  label: 'Historical Data',        icon: '📚' },
-    { id: 'alerts',      label: 'Alerts & AI',            icon: '⚠️' },
-    { id: 'reports',     label: 'Reports',                icon: '📋' },
-    { id: 'settings',    label: 'Settings',               icon: '⚙️' },
+    { id: 'dashboard',   label: 'Dashboard',             icon: LayoutDashboard },
+    { id: 'monitoring',  label: 'Live Monitoring',        icon: Radio },
+    { id: 'analytics',   label: 'Groundwater Analytics',  icon: LineChart },
+    { id: 'recharge',    label: 'Recharge System',        icon: Droplet },
+    { id: 'rainfall',    label: 'Rainfall Monitoring',    icon: Cloud },
+    { id: 'calculator',  label: 'Design Calculator',      icon: Wrench },
+    { id: 'mapping',     label: 'GIS Mapping',            icon: Map },
+    { id: 'historical',  label: 'Historical Data',        icon: BookOpen },
+    { id: 'alerts',      label: 'Alerts & AI',            icon: AlertTriangle },
+    { id: 'reports',     label: 'Reports',                icon: FileText },
+    { id: 'settings',    label: 'Settings',               icon: Settings },
   ];
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -509,20 +510,23 @@ export default function SmartGroundwaterDashboard() {
 
           {/* Nav */}
           <nav className="flex-1 p-4 space-y-2">
-            {navigationItems.map(item => (
-              <button
-                key={item.id}
-                onClick={() => setCurrentTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-left ${
-                  currentTab === item.id
-                    ? 'bg-gradient-to-r from-cyan-500/30 to-blue-500/20 border border-cyan-400/50 text-cyan-300 shadow-lg shadow-cyan-500/20'
-                    : 'text-slate-400 hover:text-cyan-300 hover:bg-slate-800/50'
-                }`}
-              >
-                <span className="text-xl">{item.icon}</span>
-                {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
-              </button>
-            ))}
+            {navigationItems.map(item => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setCurrentTab(item.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-left ${
+                    currentTab === item.id
+                      ? 'bg-gradient-to-r from-cyan-500/30 to-blue-500/20 border border-cyan-400/50 text-cyan-300 shadow-lg shadow-cyan-500/20'
+                      : 'text-slate-400 hover:text-cyan-300 hover:bg-slate-800/50'
+                  }`}
+                >
+                  <Icon size={20} className="flex-shrink-0" />
+                  {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
+                </button>
+              );
+            })}
           </nav>
 
           {/* Sidebar footer */}
