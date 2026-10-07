@@ -13,9 +13,9 @@ import {
 } from "firebase/firestore";
 import {
   ChevronDown, Bell, Settings, User, Map, TrendingDown, TrendingUp,
-  Droplet, AlertTriangle, Activity, Zap, Wind, Cloud, Gauge, Wrench,
+  Droplet, AlertTriangle, Activity, Zap, Wind, Cloud, Gauge,
   BarChart3, PieChart, Download, Calendar, RotateCcw, Navigation2,
-  CheckCircle, AlertCircle, PlusCircle, MinusCircle, Target,
+  CheckCircle, AlertCircle, PlusCircle, MinusCircle,
   LayoutDashboard, Radio, LineChart, BookOpen, FileText
 } from 'lucide-react';
 import Reports from './Reports';
@@ -37,7 +37,6 @@ export default function SmartGroundwaterDashboard() {
   const [pumpStatus] = useState('running');
   const [waterQuality] = useState(85);
   const [activeAlerts] = useState(3);
-  const [calcResults, setCalcResults] = useState(null);
 
   // ── UI State ──────────────────────────────────────────────────────────────
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -107,43 +106,12 @@ export default function SmartGroundwaterDashboard() {
     loadSensors();
   }, []);
 
-  // ── Design calculator handler ─────────────────────────────────────────────
-  const handleCalculate = (e) => {
-    e.preventDefault();
-    const areaSize    = parseFloat(e.target.areaSize.value);
-    const soilType    = e.target.soilType.value;
-    const rainfall    = parseFloat(e.target.rainfall.value);
-    const gwDepth     = parseFloat(e.target.gwDepth.value);
-    const runoffCoeff = parseFloat(e.target.runoffCoeff.value);
-
-    const soilInfiltration = { sand: 50, loam: 25, clay: 5 }[soilType] || 25;
-    const tankVolume  = (areaSize * rainfall * runoffCoeff) / 1000;
-    const wellDiameter = Math.sqrt((tankVolume / Math.PI) / 10);
-    const wellDepth   = gwDepth * 0.8;
-    const numWells    = Math.ceil(tankVolume / (soilInfiltration * wellDepth));
-
-    setCalcResults({
-      tankDimensions: {
-        length: Math.sqrt(tankVolume) * 2,
-        width:  Math.sqrt(tankVolume),
-        depth:  2
-      },
-      wellDiameter:   wellDiameter.toFixed(2),
-      wellDepth:      wellDepth.toFixed(2),
-      storageVolume:  tankVolume.toFixed(2),
-      numWells,
-      annualRecharge: (tankVolume * 10).toFixed(0)
-    });
-  };
-
   // ── Navigation items ──────────────────────────────────────────────────────
   const navigationItems = [
     { id: 'dashboard',   label: 'Dashboard',             icon: LayoutDashboard },
     { id: 'monitoring',  label: 'Live Monitoring',        icon: Radio },
     { id: 'analytics',   label: 'Groundwater Analytics',  icon: LineChart },
     { id: 'recharge',    label: 'Recharge System',        icon: Droplet },
-    { id: 'rainfall',    label: 'Rainfall Monitoring',    icon: Cloud },
-    { id: 'calculator',  label: 'Design Calculator',      icon: Wrench },
     { id: 'mapping',     label: 'GIS Mapping',            icon: Map },
     { id: 'historical',  label: 'Historical Data',        icon: BookOpen },
     { id: 'alerts',      label: 'Alerts & AI',            icon: AlertTriangle },
@@ -346,72 +314,6 @@ export default function SmartGroundwaterDashboard() {
             <div className="w-2 h-2 bg-cyan-400 rounded-full border border-cyan-300" />
             <span className="text-slate-300">Recharge Site</span>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const DesignCalculator = () => (
-    <div className="bg-gradient-to-br from-slate-900/50 via-slate-800/30 to-slate-900/50 rounded-2xl border border-cyan-500/20 p-8 backdrop-blur-md">
-      <div className="grid md:grid-cols-2 gap-8">
-        <div>
-          <h3 className="text-white font-semibold text-lg mb-6">Engineering Calculator</h3>
-          <form onSubmit={handleCalculate} className="space-y-6">
-            {[
-              { id: 'areaSize',    label: 'Catchment Area (km²)',   type: 'number', step: '0.1',  def: '5'    },
-              { id: 'rainfall',    label: 'Annual Rainfall (mm)',    type: 'number', step: '10',   def: '400'  },
-              { id: 'gwDepth',     label: 'Groundwater Depth (m)',   type: 'number', step: '1',    def: '45'   },
-              { id: 'runoffCoeff', label: 'Runoff Coefficient',      type: 'number', step: '0.05', def: '0.35', min:'0', max:'1' },
-            ].map(f => (
-              <div key={f.id}>
-                <label className="block text-slate-300 text-sm font-medium mb-2">{f.label}</label>
-                <input
-                  name={f.id}
-                  type={f.type}
-                  step={f.step}
-                  min={f.min}
-                  max={f.max}
-                  defaultValue={f.def}
-                  className="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white focus:border-cyan-400 focus:outline-none transition-all"
-                />
-              </div>
-            ))}
-            <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">Soil Type</label>
-              <select name="soilType" className="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white focus:border-cyan-400 focus:outline-none transition-all">
-                <option value="sand">Sand (K = 50 m/day)</option>
-                <option value="loam">Loam (K = 25 m/day)</option>
-                <option value="clay">Clay (K = 5 m/day)</option>
-              </select>
-            </div>
-            <button type="submit" className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold hover:from-cyan-400 hover:to-blue-400 transition-all shadow-lg hover:shadow-cyan-500/50 flex items-center justify-center gap-2">
-              <Target size={18} /> Calculate Design Parameters
-            </button>
-          </form>
-        </div>
-        <div>
-          <h3 className="text-white font-semibold text-lg mb-6">Design Recommendations</h3>
-          {calcResults ? (
-            <div className="space-y-4">
-              {[
-                { label: 'Tank Dimensions',              value: `L: ${calcResults.tankDimensions.length.toFixed(1)}m × W: ${calcResults.tankDimensions.width.toFixed(1)}m × D: ${calcResults.tankDimensions.depth.toFixed(1)}m`, color: 'text-cyan-400' },
-                { label: 'Recharge Well Diameter',       value: `${calcResults.wellDiameter} m`,            color: 'text-blue-400'   },
-                { label: 'Recharge Well Depth',          value: `${calcResults.wellDepth} m`,               color: 'text-emerald-400' },
-                { label: 'Storage Volume',               value: `${calcResults.storageVolume} m³`,          color: 'text-purple-400' },
-                { label: 'Number of Recharge Wells',     value: `${calcResults.numWells} wells`,            color: 'text-orange-400' },
-                { label: 'Annual Recharge Potential',    value: `${calcResults.annualRecharge} m³/year`,    color: 'text-green-400'  },
-              ].map(r => (
-                <div key={r.label} className="bg-slate-800/30 border border-cyan-500/20 rounded-lg p-4">
-                  <p className="text-slate-400 text-sm mb-1">{r.label}</p>
-                  <p className={`${r.color} font-semibold`}>{r.value}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-64 text-slate-500">
-              <p>Fill in parameters and calculate to see recommendations</p>
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -778,22 +680,6 @@ export default function SmartGroundwaterDashboard() {
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
-
-              {/* ── RAINFALL ── */}
-              {currentTab === 'rainfall' && (
-                <div className="space-y-8">
-                  <h2 className="text-2xl font-bold text-white">Rainfall Monitoring</h2>
-                  <ChartSimulation title="Rainfall Intensity (mm/h)" data={[2,5,8,12,15,18,20,18,15,12,8,5,2]} />
-                </div>
-              )}
-
-              {/* ── CALCULATOR ── */}
-              {currentTab === 'calculator' && (
-                <div className="space-y-8">
-                  <h2 className="text-2xl font-bold text-white">Smart Design Calculator</h2>
-                  <DesignCalculator />
                 </div>
               )}
 
