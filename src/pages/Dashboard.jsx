@@ -477,7 +477,7 @@ export default function SmartGroundwaterDashboard() {
               >
                 {sensors.map(sensor => (
                   <option key={sensor.id} value={sensor.id}>
-                    {sensor.name || sensor.id}
+                    {sensor.sensorId || sensor.id}
                   </option>
                 ))}
               </select>
