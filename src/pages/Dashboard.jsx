@@ -292,9 +292,6 @@ export default function SmartGroundwaterDashboard() {
           backgroundSize: '50px 50px'
         }} />
         <div className="absolute inset-0 p-8">
-          <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-red-500/10 border border-red-500/30 animate-pulse" />
-          <div className="absolute top-1/3 right-1/4 w-24 h-24 rounded-full bg-yellow-500/10 border border-yellow-500/30" />
-          <div className="absolute bottom-1/4 left-1/3 w-40 h-40 rounded-full bg-green-500/10 border border-green-500/30" />
           {[{ x: '20%', y: '30%', label: 'Site A' }, { x: '60%', y: '50%', label: 'Site B' }, { x: '40%', y: '70%', label: 'Site C' }]
             .map((site, idx) => (
               <div key={idx} className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group" style={{ left: site.x, top: site.y }}>
@@ -304,12 +301,6 @@ export default function SmartGroundwaterDashboard() {
             ))}
         </div>
         <div className="absolute bottom-4 right-4 space-y-2 text-xs bg-slate-900/80 backdrop-blur-md border border-slate-700/50 rounded-lg p-3">
-          {[['red','High Stress'],['yellow','Medium Stress'],['green','Suitable Zone']].map(([c,l]) => (
-            <div key={l} className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full bg-${c}-500/50 border border-${c}-500`} />
-              <span className="text-slate-300">{l}</span>
-            </div>
-          ))}
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-cyan-400 rounded-full border border-cyan-300" />
             <span className="text-slate-300">Recharge Site</span>
